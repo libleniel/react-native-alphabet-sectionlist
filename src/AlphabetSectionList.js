@@ -13,6 +13,8 @@ import merge from 'merge';
 
 import RightSectionList from './RightSectionList';
 
+import sectionListGetItemLayout from 'react-native-section-list-get-item-layout'
+
 const { UIManager } = NativeModules;
 
 export default class AlphabetSectionList extends Component {
@@ -32,6 +34,18 @@ export default class AlphabetSectionList extends Component {
     this.onScroll = this.onScroll.bind(this);
     this.onScrollAnimationEnd = this.onScrollAnimationEnd.bind(this);
     this.scrollToSection = this.scrollToSection.bind(this);
+
+    this.getItemLayout = sectionListGetItemLayout({
+      // The height of the row with rowData at the given sectionIndex and rowIndex
+      getItemHeight: (rowData, sectionIndex, rowIndex) => { 
+        return (this.props.itemLayout && this.props.itemLayout.itemHeight) || 50
+      },
+ 
+      // These four properties are optional
+      getSectionHeaderHeight: () =>  {
+        return (this.props.itemLayout && this.props.itemLayout.sectionHeaderHeight) || 20
+      }, // The height of your section headers
+    })
   }
 
   componentDidMount() {
@@ -94,6 +108,15 @@ export default class AlphabetSectionList extends Component {
     }
   }
 
+  onScrollIndexFailed(info) {
+    /* onScrollToIndexFailed?: (info: {
+        index: number;
+        highestMeasuredFrameIndex: number;
+        averageItemLength: number;
+    }) => void; */
+    //TODO: ***
+  }
+
   render() {
     const { data } = this.props;
     let sectionList;
@@ -144,6 +167,8 @@ export default class AlphabetSectionList extends Component {
       ListHeaderComponent: renderHeader,
       renderSectionHeader: renderSectionHeader,
       renderItem: this.props.renderItem,
+      onScrollToIndexFailed: this.onScrollIndexFailed,
+      getItemLayout: this.getItemLayout
     });
 
     props.style = void 0;
