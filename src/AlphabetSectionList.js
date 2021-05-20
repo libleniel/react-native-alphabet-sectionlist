@@ -49,14 +49,16 @@ export default class AlphabetSectionList extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      UIManager.measure(ReactNative.findNodeHandle(this.refs.view), (x, y, w, h) => {
-        this.containerHeight = h;
-        if (this.props.contentInset && this.props.data && this.props.data.length > 0) {
-          this.scrollToSection(Object.keys(this.props.data)[0]);
-        }
-      });
-    }, 0);
+    if (this.refView) {
+      setTimeout(() => {
+        UIManager.measure(ReactNative.findNodeHandle(this.refView), (x, y, w, h) => {
+          this.containerHeight = h;
+          if (this.props.contentInset && this.props.data && this.props.data.length > 0) {
+            this.scrollToSection(Object.keys(this.props.data)[0]);
+          }
+        });
+      }, 0);
+    }
   }
 
   scrollToSection(section) {
@@ -66,7 +68,7 @@ export default class AlphabetSectionList extends Component {
     }
     const index = keys.indexOf(section);
 
-    this.refs.listview.scrollToLocation({ sectionIndex: index, itemIndex: 0, animated: true });
+    this.refListView && this.refListView.scrollToLocation({ sectionIndex: index, itemIndex: 0, animated: true });
 
     this.props.onScrollToSection && this.props.onScrollToSection(section);
   }
@@ -174,9 +176,9 @@ export default class AlphabetSectionList extends Component {
     props.style = void 0;
 
     return (
-      <View ref="view" style={[styles.container, this.props.style]}>
+      <View ref={(ref) => this.refView = ref} style={[styles.container, this.props.style]}>
         <SectionList
-          ref="listview"
+          ref={(ref) => this.refListView = ref}
           keyExtractor={(item, index) => item + index}
           {...props}
         />
